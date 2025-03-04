@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 void main() {
   // 最初に表示するWidget
@@ -29,9 +30,16 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
-  // Todoリストのデータ
-  List<String> todoList = [];
+  List<String> todoList = ['Task 1', 'Task 2', 'Task 3']; //初期データ
 
+  /// 指定した `index` のアイテムを削除
+  void deleteItem(BuildContext context, int index) {
+    setState(() {
+      todoList.removeAt(index);
+    });
+  }
+
+  // Todoリストのデータ
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,9 +51,27 @@ class _TodoListPageState extends State<TodoListPage> {
       body: ListView.builder(
         itemCount: todoList.length,
         itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              title: Text(todoList[index]),
+          return Slidable(
+            key: const ValueKey(0),
+            startActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              dismissible: DismissiblePane(onDismissed: () {
+                deleteItem(context, index);
+              }),
+              children: [
+                SlidableAction(
+                  onPressed: (context) => deleteItem(context, index),
+                  backgroundColor: Color(0xFFFE4A49),
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete,
+                  label: 'Delete',
+                ),
+              ],
+            ),
+            child: Card(
+              child: ListTile(
+                title: Text(todoList[index]),
+              ),
             ),
           );
         },
